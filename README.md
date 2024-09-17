@@ -1,3 +1,40 @@
+# DevOps MODUL - Assignment 1
+
+SDE25 WS2024/25
+
+## Project Overview
+
+objectives:
+
+- [x] **Create Dockerfile:** a multi-stage Dockerfile was created to build and containerize the web application.
+- [x] **Set up CI/CD Pipeline:**
+    - [x] Linting: Runs on every push to any branch.
+    - [x] Building: Runs on every push to any branch.
+    - [x] Auditing: Runs only on merges to the `main` or `release` branches.
+- [x] **Push Docker Image to Docker Hub:** The Docker image has been successfully pushed to [Docker Hub](https://hub.docker.com/r/erna67/devops-webapp).
+- [ ] **Deploy on Azure Container Apps**
+
+## Docker Image
+
+The Docker image for this project is available on Docker Hub:
+
+- **Repository:** [erna67/devops-webapp](https://hub.docker.com/r/erna67/devops-webapp)
+- **Tag:** release
+
+### How to Run Locally
+
+To run the application locally using Docker, use the following commands:
+
+```bash
+docker pull erna67/devops-webapp:release
+docker run -p 3000:3000 erna67/devops-webapp:release
+```
+
+The application will be available at `http://localhost:3000`.
+
+
+-----
+
 # Startup - Free Next.js Startup Website Template
 
 Startup free, open-source, and premium-quality startup website template for Next.js comes with everything you need to launch a startup, business, or SaaS website, including all essential sections, components, and pages.

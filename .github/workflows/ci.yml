@@ -3,7 +3,11 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - '*'
+      - '*'  # Runs on pushes to any branch
+  pull_request:
+    branches:
+      - main
+      - release  # Runs on PRs targeting main or release branches
 
 jobs:
   lint:

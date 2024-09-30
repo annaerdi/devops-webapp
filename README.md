@@ -142,3 +142,34 @@ To verify that the rolling update is happening correctly, we can check the statu
 ```bash
 kubectly rollout status deployment/devops-webapp-deployment
 ```
+
+## Scale the application by adjusting replica counts
+
+This step involves adjusting the number of replicas (pods) for the deployment. 
+We can do this with `kubectl` commands:
+
+1. **Manually scale the application Using `kubectl scale`**
+    ```sh
+    kubectl scale deployment devops-webapp-deployment --replicas=5
+    ```
+    This sets the number of replicas to `5`.
+
+
+2. **Scaling by editing the deployment YAML**: We can also update the `replicas` field in the deployment YAML file and apply the changes:
+    ```yaml
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: devops-webapp-deployment
+     spec:
+       replicas: 5
+     ```
+    Apply the changes: `kubectl apply -f k8s/deployment.yaml`
+
+After scaling, we can check the status of the deployment to verify that the number of replicas has changed:
+
+```sh
+> kubectl get deployment devops-webapp-deployment
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+devops-webapp-deployment   5/5     5            5           37m
+```

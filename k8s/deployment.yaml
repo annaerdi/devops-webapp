@@ -4,6 +4,11 @@ metadata:
   name: devops-webapp-deployment
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1     # Maximum number of pods that can be unavailable during the update
+      maxSurge: 1           # Maximum number of pods that can be created above the desired number of replicas during the update
   selector:
     matchLabels:
       app: devops-webapp

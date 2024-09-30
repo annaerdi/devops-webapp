@@ -92,8 +92,56 @@ The following steps were taken to deploy the application on Minikube:
     * Opening service default/devops-webapp-service in default browser...
    ```
 
+## Implement a rolling update strategy for zero-downtime deployments
 
+We can leverage the rolling update mechanism that Kubernetes provides by default. This approach updates pods 
+incrementally, ensuring that some pods are always available, hence minimizing downtime.
 
+We can just add the following command to the deployment file to update the image:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+```
+
+Explanation:
+* `strategy.type: RollingUpdate`: This specifies that the deployment strategy will be a rolling update.
+* `rollingUpdate.maxUnavailable: 1`: This controls how many pods can be unavailable during the update. Setting it to 1 means that one pod can be taken down at a time.
+* `rollingUpdate.maxSurge: 1`: This controls how many new pods can be created over the desired count of replicas during the update. Setting it to 1 means that one new pod will be created before an old one is taken down, ensuring there is always a sufficient number of available pods.
+
+**Updating the Deployment**
+
+To perform a rolling update, we can just update the container image or other properties of the deployment and reapply the configuration.
+For example, if we have a new version of the container image, we can edit the deployment YAML file with the new version:
+
+```yaml
+spec:
+  containers:
+  - name: devops-webapp
+    image: erna67/devops-webapp:release-v2
+```
+
+Then, we can apply the updated configuration:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+```
+
+Kubernetes will start the rolling update:
+* It will bring up a new pod with the updated image.
+* Once the new pod is ready (i.e., passes readiness checks), it will take down an old pod.
+* This process continues until all pods are updated.
+
+**Verify the Rolling Update**
+
+To verify that the rolling update is happening correctly, we can check the status of the pods:
+
+```bash
+kubectly rollout status deployment/devops-webapp-deployment
+```
 
 -----
 

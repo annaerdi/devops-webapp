@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-webapp-deployment
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1     # Maximum number of pods that can be unavailable during the update
+      maxSurge: 1           # Maximum number of pods that can be created above the desired number of replicas during the update
+  selector:
+    matchLabels:
+      app: devops-webapp
+  template:
+    metadata:
+      labels:
+        app: devops-webapp
+    spec:
+      containers:
+        - name: devops-webapp-container
+          image: erna67/devops-webapp:release
+          ports:
+            - containerPort: 3000

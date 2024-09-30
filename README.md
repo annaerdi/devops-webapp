@@ -33,66 +33,160 @@ docker run -p 3000:3000 erna67/devops-webapp:release
 The application will be available at `http://localhost:3000`.
 
 
------
+# Assignment 2 - Kubernetes
 
-# Startup - Free Next.js Startup Website Template
+Tasks:
+1. [x] Deploy a containerized web application on your local Kubernetes cluster.
+2. [x] Implement a rolling update strategy for zero-downtime deployments.
+3. [x] Scale the application by adjusting replica counts using Kubernetes commands.
+4. [x] The application should be accessed by your local machine
 
-Startup free, open-source, and premium-quality startup website template for Next.js comes with everything you need to launch a startup, business, or SaaS website, including all essential sections, components, and pages.
+## Deploy the containerized app on local K8s cluster
 
-If you're looking for a high-quality and visually appealing, feature-rich Next.js Template for your next startup, SaaS, or business website, this is the perfect choice and starting point for you!
+For utilizing a local Kubernetes cluster, I have used Minikube, as I already had it installed on my machine.
 
-### ✨ Key Features
-- Crafted for Startup and SaaS Business
-- Next.js and Tailwind CSS
-- All Essential Business Sections and Pages
-- High-quality and Clean Design
-- Dark and Light Version
-- TypeScript Support
-and Much More ...
+The following steps were taken to deploy the application on Minikube:
 
-### 🙌 Detailed comparison between the Free and Pro versions of Startup
+1. **Start Minikube:**
+    ```bash
+    minikube start
+    ```
 
-| Feature             | Free | Pro |
-|---------------------|------------|----------|
-| Next.js Landing Page             | ✅ Yes      | ✅ Yes      |
-| All The Integrations - Auth, DB, Payments, Blog and many more ...             | ❌ No      | ✅ Yes |
-| Homepage Variations             | 1      | 2 |
-| Additional SaaS Pages and Components             | ❌ No      | ✅ Yes |
-| Functional Blog with Sanity       | ❌ No      | ✅ Yes | ✅ Yes |
-| Use with Commercial Projects            | ✅ Yes      | ✅ Yes      |
-| Lifetime Free Updates             | ✅ Yes      | ✅ Yes |
-| Email Support       | ❌ No         | ✅ Yes       |
-| Community Support         | ✅ Yes         | ✅ Yes       |
+2. **Create a Kubernetes service:** see `k8s/deployment.yaml`
+
+3. **Apply the deployment:**
+    ```bash
+    kubectl apply -f k8s/deployment.yaml
+    ```
+   
+4. Verify that the deployment is running:
+    ```bash
+    kubectl get pods
+    
+    NAME                                       READY   STATUS    RESTARTS   AGE
+    devops-webapp-deployment-d7b6b98c7-69n5m   1/1     Running   0          2m6s
+    devops-webapp-deployment-d7b6b98c7-727tn   1/1     Running   0          2m6s
+    devops-webapp-deployment-d7b6b98c7-fhg7c   1/1     Running   0          2m6s
+    ```
+   
+5. **Create a Service to expose the application**
+    ```bash
+    kubectl apply -f k8s/service.yaml
+    ```
+   
+6. **Verify that the service is running:**
+    ```bash
+    kubectl get services
+    ```
+   
+7. **Access the application:** Minikube provides a convenient command to access services.
+   This command will automatically open the web browser to access the application using the correct Minikube IP and port:
+    ```bash
+    minikube service devops-webapp-service
+    ```
+
+## Implement a rolling update strategy for zero-downtime deployments
+
+We can leverage the rolling update mechanism that Kubernetes provides by default. This approach updates pods 
+incrementally, ensuring that some pods are always available, hence minimizing downtime.
+
+We can just add the following command to the deployment file to update the image:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+```
+
+Explanation:
+* `strategy.type: RollingUpdate`: This specifies that the deployment strategy will be a rolling update.
+* `rollingUpdate.maxUnavailable: 1`: This controls how many pods can be unavailable during the update. Setting it to 1 means that one pod can be taken down at a time.
+* `rollingUpdate.maxSurge: 1`: This controls how many new pods can be created over the desired count of replicas during the update. Setting it to 1 means that one new pod will be created before an old one is taken down, ensuring there is always a sufficient number of available pods.
+
+**Updating the Deployment**
+
+To perform a rolling update, we can just update the container image or other properties of the deployment and reapply the configuration.
+For example, if we have a new version of the container image, we can edit the deployment YAML file with the new version:
+
+```yaml
+spec:
+  containers:
+  - name: devops-webapp
+    image: erna67/devops-webapp:release-v2
+```
+
+Then, we can apply the updated configuration:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+```
+
+Kubernetes will start the rolling update:
+* It will bring up a new pod with the updated image.
+* Once the new pod is ready (i.e., passes readiness checks), it will take down an old pod.
+* This process continues until all pods are updated.
+
+**Verify the Rolling Update**
+
+To verify that the rolling update is happening correctly, we can check the status of the pods:
+
+```bash
+kubectly rollout status deployment/devops-webapp-deployment
+```
+
+## Scale the application by adjusting replica counts
+
+This step involves adjusting the number of replicas (pods) for the deployment. 
+We can do this with `kubectl` commands:
+
+1. **Manually scale the application Using `kubectl scale`**
+    ```sh
+    kubectl scale deployment devops-webapp-deployment --replicas=5
+    ```
+    This sets the number of replicas to `5`.
 
 
-### [🔥 Get Startup Pro](https://nextjstemplates.com/templates/saas-starter-startup)
+2. **Scaling by editing the deployment YAML**: We can also update the `replicas` field in the deployment YAML file and apply the changes:
+    ```yaml
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: devops-webapp-deployment
+     spec:
+       replicas: 5
+     ```
+    Apply the changes: `kubectl apply -f k8s/deployment.yaml`
 
-[![Startup Pro](https://raw.githubusercontent.com/NextJSTemplates/startup-nextjs/main/startup-pro.webp)](https://nextjstemplates.com/templates/saas-starter-startup)
+After scaling, we can check the status of the deployment to verify that the number of replicas has changed:
 
-Startup Pro - Expertly crafted for fully-functional, high-performing SaaS startup websites. Comes with with Authentication, Database, Blog, and all the essential integrations necessary for SaaS business sites.
+```sh
+> kubectl get deployment devops-webapp-deployment
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+devops-webapp-deployment   5/5     5            5           37m
+```
 
+## Verify the application is running
 
-### [🚀 View Free Demo](https://startup.nextjstemplates.com/)
+After running the command `minikube service devops-webapp-service`, the application is available at the following address:
 
-### [🚀 View Pro Demo](https://startup-pro.nextjstemplates.com/)
+```bash
+|-----------|-----------------------|-------------|---------------------------|
+| NAMESPACE |         NAME          | TARGET PORT |            URL            |
+|-----------|-----------------------|-------------|---------------------------|
+| default   | devops-webapp-service |          80 | http://192.168.49.2:30407 |
+|-----------|-----------------------|-------------|---------------------------|
+* Starting tunnel for service devops-webapp-service.
+|-----------|-----------------------|-------------|------------------------|
+| NAMESPACE |         NAME          | TARGET PORT |          URL           |
+|-----------|-----------------------|-------------|------------------------|
+| default   | devops-webapp-service |             | http://127.0.0.1:54122 |
+|-----------|-----------------------|-------------|------------------------|
+* Opening service default/devops-webapp-service in default browser...
+! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+```
 
-### [📦 Download](https://nextjstemplates.com/templates/startup)
+We can  see that the app is indeed available:
 
-### [🔥 Get Pro](https://nextjstemplates.com/templates/saas-starter-startup)
-
-### [🔌 Documentation](https://nextjstemplates.com/docs)
-
-### ⚡ Deploy Now
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNextJSTemplates%2Fstartup-nextjs)
-
-[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/NextJSTemplates/startup-nextjs)
-
-
-### 📄 License
-Startup is 100% free and open-source, feel free to use with your personal and commercial projects.
-
-### 💜 Support
-If you like the template, please star this repository to inspire the team to create more stuff like this and reach more users like you!
-
-### ✨ Explore and Download - Free [Next.js Templates](https://nextjstemplates.com)
+![img.png](img.png)

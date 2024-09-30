@@ -33,6 +33,68 @@ docker run -p 3000:3000 erna67/devops-webapp:release
 The application will be available at `http://localhost:3000`.
 
 
+# Assignment 2 - Kubernetes
+
+For utilizing a local Kubernetes cluster, I have used Minikube, as I already had it installed on my machine. 
+
+## Deploy the containerized app on local K8s cluster
+
+The following steps were taken to deploy the application on Minikube:
+
+1. **Start Minikube:**
+    ```bash
+    minikube start
+    ```
+
+2. **Create a Kubernetes service:** see `k8s/deployment.yaml`
+
+3. **Apply the deployment:**
+    ```bash
+    kubectl apply -f k8s/deployment.yaml
+    ```
+   
+4. Verify that the deployment is running:
+    ```bash
+    kubectl get pods
+    
+    NAME                                       READY   STATUS    RESTARTS   AGE
+    devops-webapp-deployment-d7b6b98c7-69n5m   1/1     Running   0          2m6s
+    devops-webapp-deployment-d7b6b98c7-727tn   1/1     Running   0          2m6s
+    devops-webapp-deployment-d7b6b98c7-fhg7c   1/1     Running   0          2m6s
+    ```
+   
+5. **Create a Service to expose the application**
+    ```bash
+    kubectl apply -f k8s/service.yaml
+    ```
+   
+6. **Verify that the service is running:**
+    ```bash
+    kubectl get services
+    ```
+   
+7. **Access the application:** Minikube provides a convenient command to access services.
+   This command will automatically open your web browser to access the application using the correct Minikube IP and port:
+    ```bash
+    minikube service devops-webapp-service
+    ```
+   We can also see that the app is running and available on those addresses:
+    ```bash
+    |-----------|-----------------------|-------------|---------------------------|
+    | default   | devops-webapp-service |          80 | http://192.168.49.2:30407 |
+    |-----------|-----------------------|-------------|---------------------------|
+    * Starting tunnel for service devops-webapp-service.
+    |-----------|-----------------------|-------------|------------------------|
+    | NAMESPACE |         NAME          | TARGET PORT |          URL           |
+    |-----------|-----------------------|-------------|------------------------|
+    | default   | devops-webapp-service |             | http://127.0.0.1:53312 |
+    |-----------|-----------------------|-------------|------------------------|
+    * Opening service default/devops-webapp-service in default browser...
+   ```
+
+
+
+
 -----
 
 # Startup - Free Next.js Startup Website Template

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-webapp-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops-webapp
+  template:
+    metadata:
+      labels:
+        app: devops-webapp
+    spec:
+      containers:
+        - name: devops-webapp-container
+          image: erna67/devops-webapp:release
+          ports:
+            - containerPort: 3000

@@ -35,9 +35,15 @@ The application will be available at `http://localhost:3000`.
 
 # Assignment 2 - Kubernetes
 
-For utilizing a local Kubernetes cluster, I have used Minikube, as I already had it installed on my machine. 
+Tasks:
+1. [x] Deploy a containerized web application on your local Kubernetes cluster.
+2. [x] Implement a rolling update strategy for zero-downtime deployments.
+3. [x] Scale the application by adjusting replica counts using Kubernetes commands.
+4. [x] The application should be accessed by your local machine
 
 ## Deploy the containerized app on local K8s cluster
+
+For utilizing a local Kubernetes cluster, I have used Minikube, as I already had it installed on my machine.
 
 The following steps were taken to deploy the application on Minikube:
 
@@ -74,23 +80,10 @@ The following steps were taken to deploy the application on Minikube:
     ```
    
 7. **Access the application:** Minikube provides a convenient command to access services.
-   This command will automatically open your web browser to access the application using the correct Minikube IP and port:
+   This command will automatically open the web browser to access the application using the correct Minikube IP and port:
     ```bash
     minikube service devops-webapp-service
     ```
-   We can also see that the app is running and available on those addresses:
-    ```bash
-    |-----------|-----------------------|-------------|---------------------------|
-    | default   | devops-webapp-service |          80 | http://192.168.49.2:30407 |
-    |-----------|-----------------------|-------------|---------------------------|
-    * Starting tunnel for service devops-webapp-service.
-    |-----------|-----------------------|-------------|------------------------|
-    | NAMESPACE |         NAME          | TARGET PORT |          URL           |
-    |-----------|-----------------------|-------------|------------------------|
-    | default   | devops-webapp-service |             | http://127.0.0.1:53312 |
-    |-----------|-----------------------|-------------|------------------------|
-    * Opening service default/devops-webapp-service in default browser...
-   ```
 
 ## Implement a rolling update strategy for zero-downtime deployments
 
@@ -173,3 +166,27 @@ After scaling, we can check the status of the deployment to verify that the numb
 NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
 devops-webapp-deployment   5/5     5            5           37m
 ```
+
+## Verify the application is running
+
+After running the command `minikube service devops-webapp-service`, the application is available at the following address:
+
+```bash
+|-----------|-----------------------|-------------|---------------------------|
+| NAMESPACE |         NAME          | TARGET PORT |            URL            |
+|-----------|-----------------------|-------------|---------------------------|
+| default   | devops-webapp-service |          80 | http://192.168.49.2:30407 |
+|-----------|-----------------------|-------------|---------------------------|
+* Starting tunnel for service devops-webapp-service.
+|-----------|-----------------------|-------------|------------------------|
+| NAMESPACE |         NAME          | TARGET PORT |          URL           |
+|-----------|-----------------------|-------------|------------------------|
+| default   | devops-webapp-service |             | http://127.0.0.1:54122 |
+|-----------|-----------------------|-------------|------------------------|
+* Opening service default/devops-webapp-service in default browser...
+! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+```
+
+We can  see that the app is indeed available:
+
+![img.png](img.png)

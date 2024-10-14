@@ -1,6 +1,7 @@
 # Configuring the Azure provider
 provider "azurerm" {
   features {}
+  subscription_id = var.subscription_id != "" ? var.subscription_id : ""
 }
 
 # Setting up the Resource Group
@@ -32,6 +33,7 @@ resource "azurerm_linux_web_app" "app" {
 
   site_config {
     app_command_line = "npm start"
+    always_on        = false  # disable always_on for the free plan
   }
 
   app_settings = {

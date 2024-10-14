@@ -15,5 +15,5 @@ variable "app_service_plan_name" {
 
 variable "app_name" {
   description = "Name of the Web App"
-  default     = "my-nextjs-app"
+  default     = "erdia-devops-webapp"
 }
